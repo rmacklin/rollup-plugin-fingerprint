@@ -160,7 +160,7 @@ describe('rollup-plugin-hash', () => {
 		const res = hashWithOptions({ dest: 'tmp/[hash].js', manifest: 'tmp/manifest.json' });
 		return res.then(() => {
 			const tmp = fs.readdirSync('tmp');
-			const manifest = require('./tmp/manifest.json');
+			const manifest = readJson('tmp/manifest.json');
 			expect(tmp).to.contain(results.manifest);
 			expect(manifest).to.be.an('object');
 			expect(manifest).to.have.property('tmp/index.js');
@@ -172,7 +172,7 @@ describe('rollup-plugin-hash', () => {
 		const res = hashWithOptions({ manifestKey: 'custom/dir/index.js', dest: 'tmp/[hash].js', manifest: 'tmp/manifestCustomInput.json' });
 		return res.then(() => {
 			const tmp = fs.readdirSync('tmp');
-			const manifest = require('./tmp/manifestCustomInput.json');
+			const manifest = readJson('tmp/manifestCustomInput.json');
 			expect(tmp).to.contain(results.manifestCustomInput);
 			expect(manifest).to.be.an('object');
 			expect(manifest).to.have.property('custom/dir/index.js');
@@ -186,6 +186,32 @@ describe('rollup-plugin-hash', () => {
 		return res.then(() => {
 			expect(callback).to.have.been.called.once;
 			expect(callback).to.have.been.called.with(`tmp/${results.sha1}`);
+		});
+	});
+
+	it('should reuse an existing manifest file if the reuseManifest option is true', () => {
+		fs.mkdirSync('tmp');
+		fs.writeFileSync('tmp/manifest.json', JSON.stringify({ existing: 'foo' }));
+ 		const res = hashWithOptions({ dest: 'tmp/[hash].js', manifest: 'tmp/manifest.json', reuseManifest: true });
+		return res.then(() => {
+			const manifest = readJson('tmp/manifest.json');
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['tmp/index.js']).to.equal('tmp/' + results.sha1);
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['existing']).to.equal('foo');
+		});
+	});
+
+	it('should not reuse an existing manifest file if the reuseManifest option is false', () => {
+		fs.mkdirSync('tmp');
+		fs.writeFileSync('tmp/manifest.json', JSON.stringify({ existing: 'foo' }));
+ 		const res = hashWithOptions({ dest: 'tmp/[hash].js', manifest: 'tmp/manifest.json' });
+		return res.then(() => {
+			const manifest = readJson('tmp/manifest.json');
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['tmp/index.js']).to.equal('tmp/' + results.sha1);
+			expect(manifest).to.have.property('tmp/index.js');
+			expect(manifest['existing']).to.not.exist;
 		});
 	});
 });
