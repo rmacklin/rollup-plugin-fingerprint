@@ -214,4 +214,19 @@ describe('rollup-plugin-hash', () => {
 			expect(manifest['existing']).to.not.exist;
 		});
 	});
+
+	it('should create the dest file inside destDir if destDir is given', () => {
+		const res = hashWithOptions({ dest: 'main-[hash].js', destDir: 'tmp', manifest: 'tmp/manifest.json' });
+		return res.then(() => {
+			const tmp = fs.readdirSync('tmp');
+			const manifest = readJson('tmp/manifest.json');
+			expect(tmp).to.contain(results.manifest);
+			expect(manifest).to.be.an('object');
+			expect(manifest).to.have.property('tmp/index.js');
+
+			const hashedFileName = `main-${results.sha1}`
+			expect(manifest['tmp/index.js']).to.equal(hashedFileName);
+			expect(fs.readFileSync(`tmp/${hashedFileName}`).toString()).to.contain('hello world');
+		});
+	});
 });

@@ -56,6 +56,14 @@ Required: `true`
 
 The template of your filename destination. Must include the placeholder `[hash]` to be replaced.
 
+### destDir
+
+Type: `string`
+Required: `false`
+
+The directory in which to create the output file.
+Useful if you don't want the directory to be included in the manifest value.
+
 ### replace
 
 Type: `boolean`

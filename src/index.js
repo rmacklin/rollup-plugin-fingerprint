@@ -11,6 +11,7 @@ const algorithms = {
 
 const defaultOptions = {
 	algorithm: 'sha1',
+	destDir: '',
 	replace: false
 };
 
@@ -112,7 +113,8 @@ export default function hash(opts = {}) {
 				fs.writeFileSync(options.manifest, JSON.stringify(manifest), 'utf8');
 			}
 
-			mkdirpath(fileName);
+			const destination = path.join(options.destDir, fileName);
+			mkdirpath(destination);
 
 			let code = data.code;
 			if (bundle.sourcemap) {
@@ -124,13 +126,13 @@ export default function hash(opts = {}) {
 					url = data.map.toUrl();
 				} else {
 					url = basename + '.map';
-					fs.writeFileSync(fileName + '.map', data.map.toString());
+					fs.writeFileSync(destination + '.map', data.map.toString());
 				}
 
 				code += `\n//# sourceMappingURL=${url}`;
 			}
 
-			fs.writeFileSync(fileName, code, 'utf8');
+			fs.writeFileSync(destination, code, 'utf8');
 
 			if(options.callback && typeof options.callback === 'function') {
 				options.callback(fileName);
