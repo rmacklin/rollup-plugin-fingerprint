@@ -1,4 +1,4 @@
-# rollup-plugin-hash [![Travis Build Status][travis-img]][travis]
+# rollup-plugin-fingerprint [![Travis Build Status][travis-img]][travis]
 
 [travis-img]: https://travis-ci.org/phamann/rollup-plugin-hash.svg
 [travis]: https://travis-ci.org/phamann/rollup-plugin-hash
@@ -19,24 +19,24 @@ main.07d2bf0d12655d9f51c0637718da4889.js
 
 via npm:
 ```sh
-npm install --save-dev rollup-plugin-hash
+npm install --save-dev rollup-plugin-fingerprint
 ```
 
 via yarn:
 ```sh
-yarn add --dev rollup-plugin-hash
+yarn add --dev rollup-plugin-fingerprint
 ```
 
 ## Usage
 
 ```js
 import { rollup } from 'rollup';
-import hash from 'rollup-plugin-hash';
+import fingerprint from 'rollup-plugin-fingerprint';
 
 rollup({
     entry: 'main.js',
     plugins: [
-        hash({ 
+		fingerprint({
 			dest: 'main.[hash].js'	
 		})
     ]
